@@ -6,7 +6,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 import network
 import utils
-from engine import train_one_epoch, evaluate
+#from engine import train_one_epoch, evaluate
 
 
 
@@ -18,7 +18,7 @@ import loadData
 data = loadData.Dataset('',None)
 
 
-
+# %%
 dataset = PennFudanDataset()
 dataset_test = PennFudanDataset()
 
@@ -27,8 +27,11 @@ indices = torch.randperm(len(dataset)).tolist()
 dataset_train = torch.utils.data.Subset(dataset, indices[:-50])
 dataset_test = torch.utils.data.Subset(dataset_test, indices[-50:])
 
+
+# %%
 # Get network
 model = network.get_model(num_classes)
+
 from loadData import loadData
 
 
@@ -49,11 +52,11 @@ b = (random.sample(a,int(len(a)*0.8)))
 c = list(set(a) - set(b))
 
 for i in b:
-    print(i)
+    #print(i)
     train_IMG.append(data.__getitem__(i))
     train_Labels.append(data.__getitem__(i))
 for i in c:
-    print(i)
+    #print(i)
     test_IMG.append(data.__getitem__(i))
     test_Labels.append(data.__getitem__(i))
 
