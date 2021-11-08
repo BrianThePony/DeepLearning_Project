@@ -23,7 +23,7 @@ class Dataset(torch.utils.data.Dataset):
     def __getitem__(self, idx):
         # load images and masks
         img_path = os.path.join(self.root, "project_20_data/video1/imgs", self.imgs[idx])
-        mask_path = os.path.join(self.root, "project_20_data/video1/frames", self.masks[idx])
+        frames_path = os.path.join(self.root, "project_20_data/video1/frames", self.frames[idx])
         img = Image.open(img_path).convert("RGB")
         # note that we haven't converted the mask to RGB,
         # because each color corresponds to a different instance
@@ -42,22 +42,22 @@ class Dataset(torch.utils.data.Dataset):
 
         # get bounding box coordinates for each mask
         #num_objs = len(obj_ids)
-        text = open(mask_path).read()
+        text = open(frames_path).read()
         num_objs = len([m.start() for m in re.finditer("<xmin>",text)])
-        xminindices = [m.start() for m in re.finditer("<xmin>",text)]+6
-        xminendindices = [m.start() for m in re.finditer("</xmin>",text)]-1
-        xmaxindices = [m.start() for m in re.finditer("<xmax>",text)]+6
-        xmaxendindices = [m.start() for m in re.finditer("</xmax>",text)]-1
-        yminindices = [m.start() for m in re.finditer("<ymin>",text)]+6
-        yminendindices = [m.start() for m in re.finditer("</ymin>",text)]-1
-        ymaxindices = [m.start() for m in re.finditer("<ymax>",text)]+6
-        ymaxendindices = [m.start() for m in re.finditer("</ymax>",text)]-1
+        xminindices = [m.start() for m in re.finditer("<xmin>",text)]
+        xminendindices = [m.start() for m in re.finditer("</xmin>",text)]
+        xmaxindices = [m.start() for m in re.finditer("<xmax>",text)]
+        xmaxendindices = [m.start() for m in re.finditer("</xmax>",text)]
+        yminindices = [m.start() for m in re.finditer("<ymin>",text)]
+        yminendindices = [m.start() for m in re.finditer("</ymin>",text)]
+        ymaxindices = [m.start() for m in re.finditer("<ymax>",text)]
+        ymaxendindices = [m.start() for m in re.finditer("</ymax>",text)]
         boxes = []
         for i in range(num_objs):
-            xmin = float(text[xminindices[i]:xminendindices[i]])
-            xmax = float(text[xmaxindices[i]:xmaxendindices[i]])
-            ymin = float(text[yminindices[i]:yminendindices[i]])
-            ymax = float(text[ymaxindices[i]:ymaxendindices[i]])
+            xmin = float(text[xminindices[i]+6:xminendindices[i]-1])
+            xmax = float(text[xmaxindices[i]+6:xmaxendindices[i]-1])
+            ymin = float(text[yminindices[i]+6:yminendindices[i]-1])
+            ymax = float(text[ymaxindices[i]+6:ymaxendindices[i]-1])
             boxes.append([xmin, ymin, xmax, ymax])
 
         # convert everything into a torch.Tensor
