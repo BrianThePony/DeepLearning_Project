@@ -10,7 +10,7 @@ from PIL import Image
 import re
 
 
-class PennFudanDataset(torch.utils.data.Dataset):
+class Dataset(torch.utils.data.Dataset):
     def __init__(self, root, transforms):
         self.root = root
         self.transforms = transforms
@@ -63,7 +63,7 @@ class PennFudanDataset(torch.utils.data.Dataset):
         boxes = torch.as_tensor(boxes, dtype=torch.float32)
         # there is only one class
         labels = torch.ones((num_objs,), dtype=torch.int64)
-        masks = torch.as_tensor(masks, dtype=torch.uint8)
+        #masks = torch.as_tensor(masks, dtype=torch.uint8)
 
         image_id = torch.tensor([idx])
         area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
@@ -73,7 +73,7 @@ class PennFudanDataset(torch.utils.data.Dataset):
         target = {}
         target["boxes"] = boxes
         target["labels"] = labels
-        target["masks"] = masks
+        #target["masks"] = masks
         target["image_id"] = image_id
         target["area"] = area
         target["iscrowd"] = iscrowd
