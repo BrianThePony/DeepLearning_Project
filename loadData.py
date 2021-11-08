@@ -13,8 +13,8 @@ class Dataset(torch.utils.data.Dataset):
         self.transforms = transforms
         # load all image files, sorting them to
         # ensure that they are aligned
-        self.frames = list(sorted(os.listdir(os.path.join(root, "project_20_data/video1/frames"))))
-        self.imgs = list(sorted(os.listdir(os.path.join(root, "project_20_data/video1/imgs"))))
+        self.frames = list((os.listdir(os.path.join(root, "project_20_data/video1/frames"))))
+        self.imgs = list((os.listdir(os.path.join(root, "project_20_data/video1/imgs"))))
 
     def __getitem__(self, idx):
         # load images and masks
