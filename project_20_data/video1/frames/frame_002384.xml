@@ -1,0 +1,37 @@
+<annotation>
+  <folder>frame</folder>
+  <filename>frame_002384.PNG</filename>
+  <source>
+    <database>Unknown</database>
+    <annotation>Unknown</annotation>
+    <image>Unknown</image>
+  </source>
+  <size>
+    <width>640</width>
+    <height>480</height>
+    <depth></depth>
+  </size>
+  <segmented>0</segmented>
+  <object>
+    <name>beer</name>
+    <truncated>0</truncated>
+    <occluded>0</occluded>
+    <difficult>0</difficult>
+    <bndbox>
+      <xmin>96.8</xmin>
+      <ymin>203.67</ymin>
+      <xmax>181.24</xmax>
+      <ymax>291.05</ymax>
+    </bndbox>
+    <attributes>
+      <attribute>
+        <name>track_id</name>
+        <value>6</value>
+      </attribute>
+      <attribute>
+        <name>keyframe</name>
+        <value>True</value>
+      </attribute>
+    </attributes>
+  </object>
+</annotation>
