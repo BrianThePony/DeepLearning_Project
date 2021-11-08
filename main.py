@@ -6,7 +6,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 import network
 import utils
-from engine import train_one_epoch, evaluate
+#from engine import train_one_epoch, evaluate
 
 
 
@@ -19,8 +19,8 @@ data = loadData.Dataset('',None)
 
 
 
-dataset = PennFudanDataset()
-dataset_test = PennFudanDataset()
+dataset = data()
+dataset_test = data()
 
 # Split datasets into train/test
 indices = torch.randperm(len(dataset)).tolist()
