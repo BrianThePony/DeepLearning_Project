@@ -5,6 +5,7 @@ def loadData(filename):
 import os
 import numpy as np
 import torch
+import torch.utils.data
 import cv2
 from PIL import Image
 import re
@@ -17,7 +18,7 @@ class Dataset(torch.utils.data.Dataset):
         # load all image files, sorting them to
         # ensure that they are aligned
         self.frames = list(sorted(os.listdir(os.path.join(root, "project_20_data/video1/frames"))))
-        self.img = list(sorted(os.listdir(os.path.join(root, "project_20_data/video1/imgs"))))
+        self.imgs = list(sorted(os.listdir(os.path.join(root, "project_20_data/video1/imgs"))))
 
     def __getitem__(self, idx):
         # load images and masks
