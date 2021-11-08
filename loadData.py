@@ -21,7 +21,7 @@ class Dataset(torch.utils.data.Dataset):
 
     def __getitem__(self, idx):
         # load images and masks
-        img_path = os.path.join(self.root, "project_20_data/video1/frames", self.imgs[idx])
+        img_path = os.path.join(self.root, "project_20_data/video1/imgs", self.imgs[idx])
         mask_path = os.path.join(self.root, "project_20_data/video1/frames", self.masks[idx])
         img = Image.open(img_path).convert("RGB")
         # note that we haven't converted the mask to RGB,
