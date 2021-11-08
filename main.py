@@ -12,9 +12,6 @@ import network
 num_classes = 2
 num_infeatures = 10 #INSERT
 
-
-
-
 # Load Datasets
 from loadData import loadData
 
@@ -24,9 +21,6 @@ import random
 import numpy as np
 random.seed(1337)
 np.random.seed(1337)
-
-
-
 
 # Get network
 
