@@ -13,15 +13,21 @@ num_classes = 2
 num_infeatures = 10 #INSERT
 
 # Load Datasets
+from loadData import loadData
+
 
 # Split datasets into train/test
+import random
+import numpy as np
+random.seed(1337)
+np.random.seed(1337)
 
 # Get network
-model = network.get_model()
 
 # Define optimizer
 
+
+
 # Model training
-#output = model(images,targets)   # Returns losses and detections
 
 # Model Show
