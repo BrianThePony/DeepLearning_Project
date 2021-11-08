@@ -49,6 +49,8 @@ class Dataset(torch.utils.data.Dataset):
         ymaxindices = [m.start() for m in re.finditer("<ymax>",text)]
         ymaxendindices = [m.start() for m in re.finditer("</ymax>",text)]
         boxes = []
+        if num_objs == 0:
+            return None
         for i in range(num_objs):
             xmin = float(text[xminindices[i]+6:xminendindices[i]-1])
             xmax = float(text[xmaxindices[i]+6:xmaxendindices[i]-1])
