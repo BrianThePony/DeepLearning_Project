@@ -13,8 +13,8 @@ class Dataset(torch.utils.data.Dataset):
         self.transforms = transforms
         # load all image files, sorting them to
         # ensure that they are aligned
-        self.frames = list(sorted(os.listdir(os.path.join(root, "project_20_data/video1/frames"))))
-        self.imgs = list(sorted(os.listdir(os.path.join(root, "project_20_data/video1/imgs"))))
+        self.frames = list((os.listdir(os.path.join(root, "project_20_data/video1/frames"))))
+        self.imgs = list((os.listdir(os.path.join(root, "project_20_data/video1/imgs"))))
 
     def __getitem__(self, idx):
         # load images and masks
@@ -49,6 +49,8 @@ class Dataset(torch.utils.data.Dataset):
         ymaxindices = [m.start() for m in re.finditer("<ymax>",text)]
         ymaxendindices = [m.start() for m in re.finditer("</ymax>",text)]
         boxes = []
+        if num_objs == 0:
+            return None
         for i in range(num_objs):
             xmin = float(text[xminindices[i]+6:xminendindices[i]-1])
             xmax = float(text[xmaxindices[i]+6:xmaxendindices[i]-1])
