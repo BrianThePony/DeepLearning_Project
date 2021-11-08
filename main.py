@@ -24,6 +24,16 @@ dataset_test = torch.utils.data.Subset(dataset_test, indices[-50:])
 
 # Get network
 model = network.get_model(num_classes)
+from loadData import loadData
+
+
+# Split datasets into train/test
+import random
+import numpy as np
+random.seed(1337)
+np.random.seed(1337)
+
+# Get network
 
 # Define optimizer
 params = [p for p in model.parameters() if p.requires_grad]
@@ -33,6 +43,8 @@ optimizer = torch.optim.SGD(params, lr=0.005,
 lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer,
                                                step_size=3,
                                                gamma=0.1)
+
+
 
 # Model training
 num_epochs = 10
