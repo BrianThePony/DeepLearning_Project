@@ -1,12 +1,3 @@
-def loadData(filename):
-    import numpy as np
-    datasource = open(filename)
-<<<<<<< HEAD
-
-
-
-=======
-    
 import os
 import numpy as np
 import torch
@@ -91,4 +82,3 @@ class Dataset(torch.utils.data.Dataset):
 
     def __len__(self):
         return len(self.imgs)
->>>>>>> d13dbdb7b2f5ef26d64c89f67fe68da0ef95a8f8
