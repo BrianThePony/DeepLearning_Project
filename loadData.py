@@ -49,15 +49,18 @@ class Dataset(torch.utils.data.Dataset):
         ymaxindices = [m.start() for m in re.finditer("<ymax>",text)]
         ymaxendindices = [m.start() for m in re.finditer("</ymax>",text)]
         boxes = []
-        if num_objs == 0:
-            return None
-        for i in range(num_objs):
-            xmin = float(text[xminindices[i]+6:xminendindices[i]-1])
-            xmax = float(text[xmaxindices[i]+6:xmaxendindices[i]-1])
-            ymin = float(text[yminindices[i]+6:yminendindices[i]-1])
-            ymax = float(text[ymaxindices[i]+6:ymaxendindices[i]-1])
-            boxes.append([xmin, ymin, xmax, ymax])
-
+        try:
+            for i in range(num_objs):
+                xmin = float(text[xminindices[i]+6:xminendindices[i]-1])
+                xmax = float(text[xmaxindices[i]+6:xmaxendindices[i]-1])
+                ymin = float(text[yminindices[i]+6:yminendindices[i]-1])
+                ymax = float(text[ymaxindices[i]+6:ymaxendindices[i]-1])
+                boxes.append([xmin, ymin, xmax, ymax])
+                
+            area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
+        except:
+            area = 0
+            pass
         # convert everything into a torch.Tensor
         boxes = torch.as_tensor(boxes, dtype=torch.float32)
         # there is only one class
@@ -65,7 +68,7 @@ class Dataset(torch.utils.data.Dataset):
         #masks = torch.as_tensor(masks, dtype=torch.uint8)
 
         image_id = torch.tensor([idx])
-        area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
+        
         # suppose all instances are not crowd
         iscrowd = torch.zeros((num_objs,), dtype=torch.int64)
 
