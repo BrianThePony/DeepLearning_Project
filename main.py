@@ -27,9 +27,10 @@ indices = torch.randperm(len(dataset)).tolist()
 dataset_train = torch.utils.data.Subset(dataset, indices[:-50])
 dataset_test = torch.utils.data.Subset(dataset_test, indices[-50:])
 
+
+# %%
 # Get network
 model = network.get_model(num_classes)
-from loadData import loadData
 
 
 # Split datasets into train/test
@@ -49,13 +50,17 @@ b = (random.sample(a,int(len(a)*0.8)))
 c = list(set(a) - set(b))
 
 for i in b:
-    print(i)
-    train_IMG.append(data.__getitem__(i))
-    train_Labels.append(data.__getitem__(i))
+    #print(i)
+    d = data.__getitem__(i)
+    
+    train_IMG.append(d[0])
+    train_Labels.append(d[1])
 for i in c:
-    print(i)
-    test_IMG.append(data.__getitem__(i))
-    test_Labels.append(data.__getitem__(i))
+    #print(i)
+    d = data.__getitem__(i)
+    
+    test_IMG.append(d[0])
+    test_Labels.append(d[1])
 
 
 
@@ -71,7 +76,7 @@ lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer,
                                                gamma=0.1)
 
 
-
+# %%
 # Model training
 num_epochs = 10
 
