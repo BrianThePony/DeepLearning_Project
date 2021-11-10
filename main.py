@@ -19,8 +19,8 @@ data = loadData.Dataset('',None)
 
 
 
-dataset = data()
-dataset_test = data()
+dataset = data
+dataset_test = data
 
 # Split datasets into train/test
 indices = torch.randperm(len(dataset)).tolist()
