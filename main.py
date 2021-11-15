@@ -1,6 +1,7 @@
 import os
 from PIL import Image
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 import numpy as np
 import torch
 import torch.nn as nn
@@ -53,7 +54,7 @@ def main():
     num_classes = 2
     
     
-    torch.cuda.is_available = lambda : False
+    #torch.cuda.is_available = lambda : False
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     # Transforms
@@ -152,7 +153,7 @@ def main():
         prediction = model([img.to(device)])
         
     Image.fromarray(img.mul(255).permute(1, 2, 0).byte().numpy())
-    Image.fromarray(prediction[0]['boxes'][0, 0].mul(255).byte().cpu().numpy())
-
+    sz = prediction[0]['boxes'].size()
+    
 if __name__ == "__main__":
     main()
