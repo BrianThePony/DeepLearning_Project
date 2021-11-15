@@ -1,25 +1,15 @@
-import os
 from PIL import Image
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import numpy as np
 import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
-import network
 import utils
-import pyttsx3
 from engine import train_one_epoch, evaluate
 import loadData
 import transforms as T
 import random
-import math
-import sys
-import time
 import torchvision
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
-from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
 
 #%%
 torch.multiprocessing.freeze_support()
@@ -158,7 +148,7 @@ def main():
 
     Image.fromarray(img.mul(255).permute(1, 2, 0).byte().numpy())
     sz = prediction[0]['boxes'].size()
-    return prediction
+    return prediction, model
 
 if __name__ == "__main__":
     test = main()
