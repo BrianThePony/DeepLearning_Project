@@ -147,8 +147,8 @@ def main():
             )
 
         for images, targets in metric_logger.log_every(data_loader, print_freq, header):
-            images = list(image for image in images)
-            targets = [{k: v for k, v in t.items()} for t in targets]
+            images = list(image.to(device) for image in images)
+            targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
 
             loss_dict = model(images, targets)
 

@@ -59,10 +59,10 @@ class Dataset(torch.utils.data.Dataset):
                 
             area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
         except:
-            area = 0
+            area = torch.tensor([0])
             pass
         # convert everything into a torch.Tensor
-        if area == 0:
+        if area == torch.tensor([0]):
             boxes = torch.empty(0,4)
         else:
             boxes = torch.as_tensor(boxes, dtype=torch.float32)
