@@ -158,7 +158,7 @@ def main():
 
     Image.fromarray(img.mul(255).permute(1, 2, 0).byte().numpy())
     sz = prediction[0]['boxes'].size()
-    return prediction
+    return prediction, model
 
 if __name__ == "__main__":
     test = main()
