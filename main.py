@@ -141,7 +141,7 @@ def main():
         rect = patches.Rectangle((prediction[0]['boxes'][i,0], prediction[0]['boxes'][i,1]), prediction[0]['boxes'][i,2]-prediction[0]['boxes'][i,0], prediction[0]['boxes'][i,3]-prediction[0]['boxes'][i,1], linewidth=1, edgecolor='r', facecolor='none')
         ax.add_patch(rect)
     plt.show()
-=======
+
     #Image.fromarray(img.mul(255).permute(1, 2, 0).byte().numpy())
     #Image.fromarray(prediction[0]['boxes'][0, 0].mul(255).byte().cpu().numpy())
     
@@ -149,6 +149,6 @@ def main():
     Image.fromarray(img.mul(255).permute(1, 2, 0).byte().numpy())
     sz = prediction[0]['boxes'].size()
     return prediction
->>>>>>> 281c1364f96d4d2a1c01d3b1c9d8c94db979cbed
+
 if __name__ == "__main__":
     test = main()
