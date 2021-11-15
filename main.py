@@ -51,6 +51,10 @@ def get_transform(train):
 def main():
     # Hyper Parameters
     num_classes = 2
+    
+    
+    torch.cuda.is_available = lambda : False
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     # Transforms
     # Load Datasets
@@ -105,14 +109,12 @@ def main():
 
 
     # Get network
-    #torch.cuda.is_available = lambda : False
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
+    model = get_model(num_classes)#torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
     model.to(device)
     # move model to the right device
-    in_features = model.roi_heads.box_predictor.cls_score.in_features
+    #in_features = model.roi_heads.box_predictor.cls_score.in_features
     # replace the pre-trained head with a new one
-    model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
+    #model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
 
     # construct an optimizer
     params = [p for p in model.parameters() if p.requires_grad]
