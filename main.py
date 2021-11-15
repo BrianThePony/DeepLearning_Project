@@ -109,12 +109,12 @@ def main():
 
 
     # Get network
-    model = get_model(num_classes)#torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
+    model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
     model.to(device)
     # move model to the right device
-    #in_features = model.roi_heads.box_predictor.cls_score.in_features
+    in_features = model.roi_heads.box_predictor.cls_score.in_features
     # replace the pre-trained head with a new one
-    #model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
+    model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
 
     # construct an optimizer
     params = [p for p in model.parameters() if p.requires_grad]
@@ -149,8 +149,8 @@ def main():
             )
 
         for images, targets in metric_logger.log_every(data_loader, print_freq, header):
-            images = list(image for image in images)
-            targets = [{k: v for k, v in t.items()} for t in targets]
+            images = list(image.to(device) for image in images)
+            targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
 
             loss_dict = model(images, targets)
 
