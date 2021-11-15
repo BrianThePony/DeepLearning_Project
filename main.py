@@ -53,7 +53,7 @@ def main():
     num_classes = 2
     
     
-    torch.cuda.is_available = lambda : False
+    #torch.cuda.is_available = lambda : False
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     # Transforms
@@ -141,7 +141,6 @@ def main():
         lr_scheduler.step()
         # evaluate on the test dataset
         evaluate(model, data_loader_test, device=device)
-        print(epoch)
         
     # Model Show
     # pick one image from the test set
