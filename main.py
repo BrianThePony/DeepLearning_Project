@@ -38,8 +38,8 @@ def main():
 
     # Split datasets into train/test
     indices = torch.randperm(len(dataset)).tolist()
-    dataset = torch.utils.data.Subset(dataset, indices[:25])#:-50
-    dataset_test = torch.utils.data.Subset(dataset_test, indices[-5:])#-50:
+    dataset = torch.utils.data.Subset(dataset, indices[:500])#:-50
+    dataset_test = torch.utils.data.Subset(dataset_test, indices[-100:])#-50:
 
     # define training and validation data loaders
     data_loader = torch.utils.data.DataLoader(
@@ -103,7 +103,7 @@ def main():
     model.to(device)
 
     # Model training
-    num_epochs = 1
+    num_epochs = 5
 
 
     for epoch in range(num_epochs):
@@ -135,10 +135,10 @@ def main():
     
     
     # Add the patch to the Axes
-    
+    color = ["red","green"]
 
     for i in range(sz[0]):
-        rect = patches.Rectangle((prediction[0]['boxes'][i,0], prediction[0]['boxes'][i,1]), prediction[0]['boxes'][i,2]-prediction[0]['boxes'][i,0], prediction[0]['boxes'][i,3]-prediction[0]['boxes'][i,1], linewidth=1, edgecolor='r', facecolor='none')
+        rect = patches.Rectangle((prediction[0]['boxes'][i,0], prediction[0]['boxes'][i,1]), prediction[0]['boxes'][i,2]-prediction[0]['boxes'][i,0], prediction[0]['boxes'][i,3]-prediction[0]['boxes'][i,1], linewidth=2, edgecolor=color[prediction[0]['labels'][i]], facecolor='none')
         ax.add_patch(rect)
     plt.show()
 
