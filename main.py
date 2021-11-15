@@ -6,7 +6,8 @@ import torch.optim as optim
 import torch.nn.functional as F
 import network
 import utils
-#from engine import train_one_epoch, evaluate
+import pyttsx3
+from engine import train_one_epoch, evaluate
 
 
 
@@ -17,10 +18,8 @@ num_classes = 2
 import loadData
 data = loadData.Dataset('',None)
 
-
-
-dataset = data()
-dataset_test = data()
+dataset = data
+dataset_test = data
 
 # Split datasets into train/test
 indices = torch.randperm(len(dataset)).tolist()
@@ -78,11 +77,19 @@ lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer,
 
 # %%
 # Model training
+torch.cuda.is_available = lambda : False
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 num_epochs = 10
-
+data_loader = torch.utils.data.DataLoader(
+    dataset, batch_size=2, shuffle=True, num_workers=1,
+    collate_fn=utils.collate_fn)
+data_loader_test = torch.utils.data.DataLoader(
+    dataset_test, batch_size=1, shuffle=False, num_workers=1,
+    collate_fn=utils.collate_fn)
 for epoch in range(num_epochs):
+    print("Epoch: %d\n",epoch)
     # train for one epoch, printing every 10 iterations
-    train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq=10)
+    train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq=1)
     # update the learning rate
     lr_scheduler.step()
     # evaluate on the test dataset
