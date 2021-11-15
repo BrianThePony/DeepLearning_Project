@@ -132,8 +132,23 @@ def main():
     with torch.no_grad():
         prediction = model([img.to(device)])
         
-    Image.fromarray(img.mul(255).permute(1, 2, 0).byte().numpy())
+    im = Image.fromarray(img.mul(255).permute(1, 2, 0).byte().numpy())
     sz = prediction[0]['boxes'].size()
+    # Create figure and axes
+    fig, ax = plt.subplots()
     
+    # Display the image
+    ax.imshow(im)
+    
+    # Create a Rectangle patch
+    
+    
+    # Add the patch to the Axes
+    
+
+    for i in range(sz[0]):
+        rect = patches.Rectangle((prediction[0]['boxes'][i,0], prediction[0]['boxes'][i,1]), prediction[0]['boxes'][i,2]-prediction[0]['boxes'][i,0], prediction[0]['boxes'][i,3]-prediction[0]['boxes'][i,1], linewidth=1, edgecolor='r', facecolor='none')
+        ax.add_patch(rect)
+    plt.show()
 if __name__ == "__main__":
     main()
