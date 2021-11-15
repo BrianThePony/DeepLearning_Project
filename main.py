@@ -142,7 +142,17 @@ def main():
         # evaluate on the test dataset
         evaluate(model, data_loader_test, device=device)
         print(epoch)
+        
     # Model Show
+    # pick one image from the test set
+    img, _ = dataset_test[0]
+    # put the model in evaluation mode
+    model.eval()
+    with torch.no_grad():
+        prediction = model([img.to(device)])
+        
+    Image.fromarray(img.mul(255).permute(1, 2, 0).byte().numpy())
+    Image.fromarray(prediction[0]['boxes'][0, 0].mul(255).byte().cpu().numpy())
 
 if __name__ == "__main__":
     main()
