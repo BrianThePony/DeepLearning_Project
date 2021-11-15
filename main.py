@@ -103,7 +103,7 @@ def main():
     model.to(device)
 
     # Model training
-    num_epochs = 5
+    num_epochs = 1
 
 
     for epoch in range(num_epochs):
