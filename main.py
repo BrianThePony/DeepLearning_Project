@@ -103,13 +103,16 @@ def main():
         test_Labels.append(d[1])
 
 
-
     # Get network
     #torch.cuda.is_available = lambda : False
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
     model.to(device)
     # move model to the right device
+    #train_IMG.to(device)
+    #train_Labels.to(device)
+    #test_IMG.to(device)
+    #test_Labels.to(device)
     in_features = model.roi_heads.box_predictor.cls_score.in_features
     # replace the pre-trained head with a new one
     model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
@@ -122,7 +125,7 @@ def main():
     lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer,
                                                     step_size=3,
                                                     gamma=0.1)
-    lr_scheduler.to(device)
+    model.to(device)
 
     # %%
     # Model training
