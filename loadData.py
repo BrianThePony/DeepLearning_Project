@@ -15,6 +15,7 @@ class Dataset(torch.utils.data.Dataset):
         # ensure that they are aligned
         self.frames = list((os.listdir(os.path.join(root, "project_20_data/video1/frames"))))
         self.imgs = list((os.listdir(os.path.join(root, "project_20_data/video1/imgs"))))
+        self.nobox = 0
 
     def __getitem__(self, idx):
         # load images and masks
@@ -48,21 +49,27 @@ class Dataset(torch.utils.data.Dataset):
         yminendindices = [m.start() for m in re.finditer("</ymin>",text)]
         ymaxindices = [m.start() for m in re.finditer("<ymax>",text)]
         ymaxendindices = [m.start() for m in re.finditer("</ymax>",text)]
-        boxes = []
-        try:
+
+        if num_objs != 0:
             for i in range(num_objs):
+                
                 xmin = float(text[xminindices[i]+6:xminendindices[i]-1])
                 xmax = float(text[xmaxindices[i]+6:xmaxendindices[i]-1])
                 ymin = float(text[yminindices[i]+6:yminendindices[i]-1])
                 ymax = float(text[ymaxindices[i]+6:ymaxendindices[i]-1])
-                boxes.append([xmin, ymin, xmax, ymax])
+                if i == 0:
+                    boxes = torch.tensor([[xmin,ymin,xmax,ymax]])
+                else:
+                    temp = torch.tensor([[xmin,ymin,xmax,ymax]])
+                    boxes = torch.cat((boxes,temp))
                 
             area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
-        except:
+        else:
+            self.nobox += 1
             area = torch.tensor([0])
-            pass
+            
         # convert everything into a torch.Tensor
-        if area == torch.tensor([0]):
+        if torch.sum(area) == torch.tensor([0]):
             boxes = torch.empty(0,4)
         else:
             boxes = torch.as_tensor(boxes, dtype=torch.float32)
