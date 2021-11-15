@@ -62,7 +62,10 @@ class Dataset(torch.utils.data.Dataset):
             area = 0
             pass
         # convert everything into a torch.Tensor
-        boxes = torch.as_tensor(boxes, dtype=torch.float32)
+        if area == 0:
+            boxes = torch.empty(0,4)
+        else:
+            boxes = torch.as_tensor(boxes, dtype=torch.float32)
         # there is only one class
         labels = torch.ones((num_objs,), dtype=torch.int64)
         #masks = torch.as_tensor(masks, dtype=torch.uint8)
