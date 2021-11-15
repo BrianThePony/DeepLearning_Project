@@ -21,6 +21,7 @@ import torchvision
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
 
+#%%
 torch.multiprocessing.freeze_support()
 
 def get_transform(train):
@@ -47,16 +48,16 @@ def main():
 
     # Split datasets into train/test
     indices = torch.randperm(len(dataset)).tolist()
-    dataset = torch.utils.data.Subset(dataset, indices[:100])#:-50
-    dataset_test = torch.utils.data.Subset(dataset_test, indices[-25:])#-50:
+    dataset = torch.utils.data.Subset(dataset, indices[:25])#:-50
+    dataset_test = torch.utils.data.Subset(dataset_test, indices[-5:])#-50:
 
     # define training and validation data loaders
     data_loader = torch.utils.data.DataLoader(
-        dataset, batch_size=2, shuffle=True, num_workers=4,
+        dataset, batch_size=2, shuffle=True, num_workers=1,
         collate_fn=utils.collate_fn)
 
     data_loader_test = torch.utils.data.DataLoader(
-        dataset_test, batch_size=1, shuffle=False, num_workers=4,
+        dataset_test, batch_size=1, shuffle=False, num_workers=1,
         collate_fn=utils.collate_fn)
 
 
@@ -111,7 +112,6 @@ def main():
                                                     gamma=0.1)
     model.to(device)
 
-    # %%
     # Model training
     num_epochs = 1
 
@@ -127,11 +127,13 @@ def main():
     # Model Show
     # pick one image from the test set
     img, _ = dataset_test[0]
+    
     # put the model in evaluation mode
     model.eval()
     with torch.no_grad():
         prediction = model([img.to(device)])
         
+<<<<<<< HEAD
     im = Image.fromarray(img.mul(255).permute(1, 2, 0).byte().numpy())
     sz = prediction[0]['boxes'].size()
     # Create figure and axes
@@ -150,5 +152,14 @@ def main():
         rect = patches.Rectangle((prediction[0]['boxes'][i,0], prediction[0]['boxes'][i,1]), prediction[0]['boxes'][i,2]-prediction[0]['boxes'][i,0], prediction[0]['boxes'][i,3]-prediction[0]['boxes'][i,1], linewidth=1, edgecolor='r', facecolor='none')
         ax.add_patch(rect)
     plt.show()
+=======
+    #Image.fromarray(img.mul(255).permute(1, 2, 0).byte().numpy())
+    #Image.fromarray(prediction[0]['boxes'][0, 0].mul(255).byte().cpu().numpy())
+    
+
+    Image.fromarray(img.mul(255).permute(1, 2, 0).byte().numpy())
+    sz = prediction[0]['boxes'].size()
+    return prediction
+>>>>>>> 281c1364f96d4d2a1c01d3b1c9d8c94db979cbed
 if __name__ == "__main__":
-    main()
+    test = main()
