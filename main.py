@@ -37,14 +37,14 @@ def main():
 
     dataset = loadData.Dataset('', get_transform(train=True))
     dataset_test = loadData.Dataset('', get_transform(train=True))
-
+    #dataset.__getitem__(1357)
     # Split datasets into train/test
     indices = torch.randperm(len(dataset)).tolist()
 
     dataset = torch.utils.data.Subset(dataset, indices[:-100])#:-50
     dataset_test = torch.utils.data.Subset(dataset_test, indices[-100:])#-50:
 
-    #dataset = torch.utils.data.Subset(dataset, indices[:25])#:-50
+    #dataset = torch.utils.data.Subset(dataset, indices[:100])#:-50
     #dataset_test = torch.utils.data.Subset(dataset_test, indices[-25:])#-50:
 
     # define training and validation data loaders

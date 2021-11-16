@@ -17,10 +17,9 @@ import os
 imlist = []
 root = r"C:\Users\NikolajBj\OneDrive - Danmarks Tekniske Universitet\DTU\7. semester\02456 - Deep Learning\DeepLearning_Project\testims"
 for i in list((os.listdir(root))):
-    im = Image.open(os.path.join(root,i))
-    im = im.convert('RGB')
+    im = Image.open(os.path.join(root,i)).convert('RGB')
     im = np.asarray(im)
-    #im = np.transpose(im)
+    im = np.transpose(im)
     imlist.append(im)
 #imlist = np.asarray(imlist)
 #imlist = torch.FloatTensor(imlist)
