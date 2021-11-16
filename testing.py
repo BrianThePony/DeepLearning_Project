@@ -13,12 +13,12 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
-im = Image.open(r"C:\Users\magnu\OneDrive - Danmarks Tekniske Universitet\Dokumenter\GitHub\DeepLearning_Project\fucked_ol.png")
+im = Image.open(r"C:\Users\NikolajBj\OneDrive - Danmarks Tekniske Universitet\DTU\7. semester\02456 - Deep Learning\DeepLearning_Project\fucked_ol.png")
 im = im.convert('RGB')
 im = np.asarray(im)
 im = np.transpose(im)
 im = torch.from_numpy(im)
-model_path = r"C:\Users\magnu\OneDrive - Danmarks Tekniske Universitet\Dokumenter\GitHub\DeepLearning_Project/model2"
+model_path = r"C:\Users\NikolajBj\OneDrive - Danmarks Tekniske Universitet\DTU\7. semester\02456 - Deep Learning\DeepLearning_Project\modelAllpix"
 model = torch.load(model_path)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
