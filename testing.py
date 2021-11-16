@@ -49,6 +49,11 @@ for i in range(len(imlist)):
     color = ["red","green"]
     
     for i in range(sz[0]):
-        rect = patches.Rectangle((pred[0]['boxes'][i,0], pred[0]['boxes'][i,1]), pred[0]['boxes'][i,2]-pred[0]['boxes'][i,0], pred[0]['boxes'][i,3]-pred[0]['boxes'][i,1], linewidth=2, edgecolor=color[pred[0]['labels'][i]], facecolor='none')
-        ax.add_patch(rect)
+        if float(pred[0]['scores'][i]*100) >= 95:
+            rect = patches.Rectangle((pred[0]['boxes'][i,0], pred[0]['boxes'][i,1]), pred[0]['boxes'][i,2]-pred[0]['boxes'][i,0], pred[0]['boxes'][i,3]-pred[0]['boxes'][i,1], linewidth=2, edgecolor=color[pred[0]['labels'][i]], facecolor='none')
+            ax.add_patch(rect)
+            if float(pred[0]['labels'][i]) == 0:
+                ax.annotate('Cola: {0:.2f}%'.format(float(pred[0]['scores'][i]*100)), (pred[0]['boxes'][i,0], pred[0]['boxes'][i,1]-10),color=color[pred[0]['labels'][i]])
+            else:
+                ax.annotate('Beer: {0:.2f}%'.format(float(pred[0]['scores'][i]*100)), (pred[0]['boxes'][i,0], pred[0]['boxes'][i,1]-10),color=color[pred[0]['labels'][i]])
     plt.show()
