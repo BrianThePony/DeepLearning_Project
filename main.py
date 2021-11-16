@@ -104,8 +104,8 @@ def main():
                                 momentum=0.9, weight_decay=0.0005)
     # and a learning rate scheduler
     lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer,
-                                                    step_size=3,
-                                                    gamma=0.1)
+                                                    step_size=1,
+                                                    gamma=0.01)
     model.to(device)
 
     # Model training
@@ -159,5 +159,5 @@ def main():
 if __name__ == "__main__":
     test = main()
     model = test[1]
-    #torch.save(model.state_dict(), 'model500pix')
+    torch.save(model.state_dict(), 'modelAllpixGamma001')
     
