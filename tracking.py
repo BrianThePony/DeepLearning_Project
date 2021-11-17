@@ -23,7 +23,7 @@ for i in list((os.listdir(root))):
     imlist.append(im)
 #imlist = np.asarray(imlist)
 #imlist = torch.FloatTensor(imlist)
-model_path = r"C:\Users\silla\OneDrive - Danmarks Tekniske Universitet\DTU\7. semester\02456 - Deep Learning\DeepLearning_Project\modelAllpixtest"
+model_path = r"C:\Users\silla\OneDrive - Danmarks Tekniske Universitet\DTU\7. semester\02456 - Deep Learning\DeepLearning_Project\modelAllpix"
 pred = []
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -32,10 +32,10 @@ for j in range(len(imlist)):
         torch.cuda.empty_cache()
     model = torch.load(model_path,map_location=device)
     model.eval()
-    im = torch.from_numpy(imlist[i])
+    im = torch.from_numpy(imlist[j])
     im = im/255
-    
-    pred = pred.append(model([im.to(device)]))
+    tempPred = model([im.to(device)])
+    pred = pred.append(tempPred)
     
     im = Image.fromarray(im.mul(255).permute(1, 2, 0).byte().numpy())
     sz = pred[0]['boxes'].size()
