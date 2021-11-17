@@ -15,7 +15,7 @@ import matplotlib.patches as patches
 import os
 imlist = []
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
-root = r"C:\Users\silla\OneDrive - Danmarks Tekniske Universitet\DTU\7. semester\02456 - Deep Learning\DeepLearning_Project\tracking"
+root = r"C:\Users\NikolajBj\OneDrive - Danmarks Tekniske Universitet\DTU\7. semester\02456 - Deep Learning\DeepLearning_Project\tracking"
 for i in list((os.listdir(root))):
     im = Image.open(os.path.join(root,i)).convert('RGB')
     im = np.asarray(im)
@@ -23,7 +23,7 @@ for i in list((os.listdir(root))):
     imlist.append(im)
 #imlist = np.asarray(imlist)
 #imlist = torch.FloatTensor(imlist)
-model_path = r"C:\Users\silla\OneDrive - Danmarks Tekniske Universitet\DTU\7. semester\02456 - Deep Learning\DeepLearning_Project\modelAllpix"
+model_path = r"C:\Users\NikolajBj\OneDrive - Danmarks Tekniske Universitet\DTU\7. semester\02456 - Deep Learning\DeepLearning_Project\modelAllpix"
 pred = []
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -34,11 +34,12 @@ for j in range(len(imlist)):
     model.eval()
     im = torch.from_numpy(imlist[j])
     im = im/255
-    tempPred = model([im.to(device)])
-    pred = pred.append(tempPred)
+    with torch.no_grad():
+        tempPred = model([im.to(device)])
+    pred.append(tempPred)
     
     im = Image.fromarray(im.mul(255).permute(1, 2, 0).byte().numpy())
-    sz = pred[0]['boxes'].size()
+    sz = pred[j][0]['boxes'].size()
         # Create figure and axes
     fig, ax = plt.subplots()
         
@@ -47,17 +48,28 @@ for j in range(len(imlist)):
     color = ["orange","red","green"]
     
     # Tracking:
+    distances = []
     if j != 0:
-        distances = pred[j][0]['boxes']-pred[j-1][0]['boxes']
+        for k in range(min(len(pred[j][0]['boxes']),len(pred[j-1][0]['boxes']))):
+            if pred[j][0]['scores'][k]*100 >= 75:
+                distances.append(pred[j][0]['boxes'][k,:]-pred[j-1][0]['boxes'][k,:])
     
     for i in range(sz[0]):
-        if float(pred[0]['scores'][i]*100) >= 75:
-            rect = patches.Rectangle((pred[j][0]['boxes'][i,0].detach().numpy(), pred[j][0]['boxes'][i,1].detach().numpy()), pred[j][0]['boxes'][i,2].detach().numpy()-pred[j][0]['boxes'][i,0].detach().numpy(), pred[j][0]['boxes'][i,3].detach().numpy()-pred[j][0]['boxes'][i,1].detach().numpy(), linewidth=2, edgecolor=color[pred[j][0]['labels'][i].detach().numpy()], facecolor='none')
-            ax.add_patch(rect)
-            if float(pred[j][0]['labels'][i].detach().numpy()) == 1:
-                ax.annotate('Cola: {0:.2f}%'.format(float(pred[j][0]['scores'][i].detach().numpy()*100)), (pred[j][0]['boxes'][i,0].detach().numpy(), pred[j][0]['boxes'][i,1].detach().numpy()-10),color=color[pred[j][0]['labels'][i].detach().numpy()])
+        if float(pred[j][0]['scores'][i]*100) >= 75:
+            if torch.cuda.is_available():
+                rect = patches.Rectangle((pred[j][0]['boxes'][i,0], pred[j][0]['boxes'][i,1]), pred[j][0]['boxes'][i,2]-pred[j][0]['boxes'][i,0], pred[j][0]['boxes'][i,3]-pred[j][0]['boxes'][i,1], linewidth=2, edgecolor=color[pred[j][0]['labels'][i]], facecolor='none')
+                ax.add_patch(rect)
+                if float(pred[j][0]['labels'][i]) == 1:
+                    ax.annotate('Cola: {0:.2f}%'.format(float(pred[j][0]['scores'][i]*100)), (pred[j][0]['boxes'][i,0], pred[j][0]['boxes'][i,1]-10),color=color[pred[j][0]['labels'][i]])
+                else:
+                    ax.annotate('Beer: {0:.2f}%'.format(float(pred[j][0]['scores'][i]*100)), (pred[j][0]['boxes'][i,0], pred[j][0]['boxes'][i,1]-10),color=color[pred[j][0]['labels'][i]])
             else:
-                ax.annotate('Beer: {0:.2f}%'.format(float(pred[j][0]['scores'][i].detach().numpy()*100)), (pred[j][0]['boxes'][i,0].detach().numpy(), pred[j][0]['boxes'][i,1].detach().numpy()-10),color=color[pred[j][0]['labels'][i].detach().numpy()])
+                rect = patches.Rectangle((pred[j][0]['boxes'][i,0].detach().numpy(), pred[j][0]['boxes'][i,1].detach().numpy()), pred[j][0]['boxes'][i,2].detach().numpy()-pred[j][0]['boxes'][i,0].detach().numpy(), pred[j][0]['boxes'][i,3].detach().numpy()-pred[j][0]['boxes'][i,1].detach().numpy(), linewidth=2, edgecolor=color[pred[j][0]['labels'][i].detach().numpy()], facecolor='none')
+                ax.add_patch(rect)
+                if float(pred[j][0]['labels'][i].detach().numpy()) == 1:
+                    ax.annotate('Cola: {0:.2f}%'.format(float(pred[j][0]['scores'][i].detach().numpy()*100)), (pred[j][0]['boxes'][i,0].detach().numpy(), pred[j][0]['boxes'][i,1].detach().numpy()-10),color=color[pred[j][0]['labels'][i].detach().numpy()])
+                else:
+                    ax.annotate('Beer: {0:.2f}%'.format(float(pred[j][0]['scores'][i].detach().numpy()*100)), (pred[j][0]['boxes'][i,0].detach().numpy(), pred[j][0]['boxes'][i,1].detach().numpy()-10),color=color[pred[j][0]['labels'][i].detach().numpy()])
     plt.show()
 if torch.cuda.is_available():
     torch.cuda.empty_cache()
