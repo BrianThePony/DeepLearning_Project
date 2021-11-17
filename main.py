@@ -164,5 +164,5 @@ def main():
 if __name__ == "__main__":
     test = main()
     model = test[1]
-    torch.save(model, 'modelAllpixtest')
+    torch.save(model, 'model')
     
