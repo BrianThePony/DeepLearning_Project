@@ -42,8 +42,8 @@ def main():
     torch.manual_seed(42)
     indices = torch.randperm(len(dataset)).tolist()
 
-    dataset = torch.utils.data.Subset(dataset, indices[:-250])#:-50
-    dataset_test = torch.utils.data.Subset(dataset_test, indices[-250:])#-50:
+    dataset = torch.utils.data.Subset(dataset, indices[1200:2000])#:-50
+    dataset_test = torch.utils.data.Subset(dataset_test, indices[-176:])#-50:
 
     #dataset = torch.utils.data.Subset(dataset, indices[:100])#:-50
     #dataset_test = torch.utils.data.Subset(dataset_test, indices[-25:])#-50:
@@ -110,7 +110,7 @@ def main():
     model.to(device)
 
     # Model training
-    num_epochs = 1
+    num_epochs = 10
 
 
     for epoch in range(num_epochs):
@@ -164,5 +164,5 @@ def main():
 if __name__ == "__main__":
     test = main()
     model = test[1]
-    torch.save(model, 'modelAllpixtest')
+    torch.save(model, 'model')
     

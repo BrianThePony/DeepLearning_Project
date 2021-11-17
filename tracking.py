@@ -13,9 +13,12 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import os
+from datetime import datetime
+import imageio
 imlist = []
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
-root = r"C:\Users\s183803\OneDrive - Danmarks Tekniske Universitet\DTU\7. semester\02456 - Deep Learning\DeepLearning_Project\trackingNew"
+start = datetime.now()
+root = r"C:\Users\NikolajBj\OneDrive - Danmarks Tekniske Universitet\DTU\7. semester\02456 - Deep Learning\DeepLearning_Project\tracking"
 for i in list((os.listdir(root))):
     im = Image.open(os.path.join(root,i)).convert('RGB')
     im = np.asarray(im)
@@ -23,10 +26,11 @@ for i in list((os.listdir(root))):
     imlist.append(im)
 #imlist = np.asarray(imlist)
 #imlist = torch.FloatTensor(imlist)
-model_path = r"C:\Users\s183803\OneDrive - Danmarks Tekniske Universitet\DTU\7. semester\02456 - Deep Learning\DeepLearning_Project\modelAllpix"
+model_path = r"C:\Users\NikolajBj\OneDrive - Danmarks Tekniske Universitet\DTU\7. semester\02456 - Deep Learning\DeepLearning_Project\modelAllpixtest2"
 pred = []
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+filenames = []
 for j in range(len(imlist)):
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
@@ -49,25 +53,47 @@ for j in range(len(imlist)):
     color = ["orange","red","green"]
     
     # Tracking:
-    if j == 0:
-        ID = np.linspace(1,sum(pred[j][0]['scores']*100>=score_thresh),sum(pred[j][0]['scores']*100>=score_thresh),dtype=int)
-    elif j != 0:
-        IDold = ID
-        ID = np.linspace(1,sum(pred[j][0]['scores']*100>=score_thresh),sum(pred[j][0]['scores']*100>=score_thresh),dtype=int)
-
-        min_distance = np.zeros(np.size(ID))
-        nearest_neighbors = np.zeros(np.size(ID),dtype=int)
-        for k in range(sum(pred[j][0]['scores']*100 >= score_thresh)):
-            distances = []
-            for l in pred[j-1][0]['boxes'][pred[j-1][0]['scores']*100>=score_thresh,:]:
-                distances.append(torch.linalg.norm(pred[j][0]['boxes'][k,:]-l))
-            min_distance[k] = min(distances)
-            nearest_neighbors[k] = distances.index(min_distance[k])
-        if len(ID) > len(IDold) or len(ID) < len(IDold):
-            min_min_distance = min(min_distance)
-            ID[int(nearest_neighbors[min_distance.tolist().index(min_min_distance)])] = IDold[int(nearest_neighbors[min_distance.tolist().index(min_min_distance)])]
-        else:
-            ID = IDold[nearest_neighbors]
+        
+    if torch.cuda.is_available():
+        if j == 0:
+            ID = np.linspace(1,sum(pred[j][0]['scores'].cpu()*100>=score_thresh),sum(pred[j][0]['scores'].cpu()*100>=score_thresh),dtype=int)
+        elif j != 0:
+            IDold = ID
+            ID = np.linspace(1,sum(pred[j][0]['scores'].cpu()*100>=score_thresh),sum(pred[j][0]['scores'].cpu()*100>=score_thresh),dtype=int)
+    
+            min_distance = np.zeros(np.size(ID))
+            nearest_neighbors = np.zeros(np.size(ID),dtype=int)
+            for k in range(sum(pred[j][0]['scores'].cpu()*100 >= score_thresh)):
+                distances = []
+                for l in pred[j-1][0]['boxes'][pred[j-1][0]['scores'].cpu()*100>=score_thresh,:]:
+                    distances.append(torch.linalg.norm(pred[j][0]['boxes'][k,:].cpu()-l.cpu()))
+                min_distance[k] = min(distances)
+                nearest_neighbors[k] = distances.index(min_distance[k])
+            if len(ID) > len(IDold) or len(ID) < len(IDold):
+                min_min_distance = min(min_distance)
+                ID[int(nearest_neighbors[min_distance.tolist().index(min_min_distance)])] = IDold[int(nearest_neighbors[min_distance.tolist().index(min_min_distance)])]
+            else:
+                ID = IDold[nearest_neighbors]
+    else:
+        if j == 0:
+            ID = np.linspace(1,sum(pred[j][0]['scores']*100>=score_thresh),sum(pred[j][0]['scores']*100>=score_thresh),dtype=int)
+        elif j != 0:
+            IDold = ID
+            ID = np.linspace(1,sum(pred[j][0]['scores']*100>=score_thresh),sum(pred[j][0]['scores']*100>=score_thresh),dtype=int)
+    
+            min_distance = np.zeros(np.size(ID))
+            nearest_neighbors = np.zeros(np.size(ID),dtype=int)
+            for k in range(sum(pred[j][0]['scores']*100 >= score_thresh)):
+                distances = []
+                for l in pred[j-1][0]['boxes'][pred[j-1][0]['scores']*100>=score_thresh,:]:
+                    distances.append(torch.linalg.norm(pred[j][0]['boxes'][k,:]-l))
+                min_distance[k] = min(distances)
+                nearest_neighbors[k] = distances.index(min_distance[k])
+            if len(ID) > len(IDold) or len(ID) < len(IDold):
+                min_min_distance = min(min_distance)
+                ID[int(nearest_neighbors[min_distance.tolist().index(min_min_distance)])] = IDold[int(nearest_neighbors[min_distance.tolist().index(min_min_distance)])]
+            else:
+                ID = IDold[nearest_neighbors]
             
     
     for i in range(sz[0]):
@@ -86,6 +112,21 @@ for j in range(len(imlist)):
                     ax.annotate('Cola {0:d}: {1:.2f}%'.format(ID[i],float(pred[j][0]['scores'][i].detach().numpy()*100)), (pred[j][0]['boxes'][i,0].detach().numpy(), pred[j][0]['boxes'][i,1].detach().numpy()-10),color=color[pred[j][0]['labels'][i].detach().numpy()])
                 else:
                     ax.annotate('Beer {0:d}: {1:.2f}%'.format(ID[i],float(pred[j][0]['scores'][i].detach().numpy()*100)), (pred[j][0]['boxes'][i,0].detach().numpy(), pred[j][0]['boxes'][i,1].detach().numpy()-10),color=color[pred[j][0]['labels'][i].detach().numpy()])
-    plt.show()
+    filename = f'gifMaker/{j}.png'
+    filenames.append(filename)
+    plt.savefig(filename)
+    plt.close()
 if torch.cuda.is_available():
     torch.cuda.empty_cache()
+
+# build gif
+with imageio.get_writer('test.gif', mode='I') as writer:
+    for filename in filenames:
+        image = imageio.imread(filename)
+        writer.append_data(image)
+        
+# Remove files
+for filename in set(filenames):
+    os.remove(filename)
+    
+print(datetime.now() - start)
