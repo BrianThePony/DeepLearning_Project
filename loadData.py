@@ -62,16 +62,16 @@ class Dataset(torch.utils.data.Dataset):
                 if i == 0:
                     boxes = torch.tensor([[xmin,ymin,xmax,ymax]])
                     if text[labelStartindices[i]+6:labelEndindices[i]] == "cola" or text[labelStartindices[i]+6:labelEndindices[i]] == "coke":
-                        labels = torch.tensor([0])
-                    else:
                         labels = torch.tensor([1])
+                    else:
+                        labels = torch.tensor([2])
                 else:
                     temp = torch.tensor([[xmin,ymin,xmax,ymax]])
                     boxes = torch.cat((boxes,temp))
                     if text[labelStartindices[i]+6:labelEndindices[i]] == "cola" or text[labelStartindices[i]+6:labelEndindices[i]] == "coke":
-                        labels = torch.cat((labels,torch.tensor([0])))
-                    else:
                         labels = torch.cat((labels,torch.tensor([1])))
+                    else:
+                        labels = torch.cat((labels,torch.tensor([2])))
                 
             area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
         else:

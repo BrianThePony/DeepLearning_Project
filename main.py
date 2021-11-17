@@ -25,7 +25,7 @@ def get_transform(train):
 
 def main():
     # Hyper Parameters
-    num_classes = 2
+    num_classes = 3
     
     
     #torch.cuda.is_available = lambda : False
@@ -39,17 +39,18 @@ def main():
     dataset_test = loadData.Dataset('', get_transform(train=True))
     #dataset.__getitem__(1357)
     # Split datasets into train/test
+    torch.manual_seed(42)
     indices = torch.randperm(len(dataset)).tolist()
 
-    dataset = torch.utils.data.Subset(dataset, indices[:-100])#:-50
-    dataset_test = torch.utils.data.Subset(dataset_test, indices[-100:])#-50:
+    dataset = torch.utils.data.Subset(dataset, indices[:-250])#:-50
+    dataset_test = torch.utils.data.Subset(dataset_test, indices[-250:])#-50:
 
     #dataset = torch.utils.data.Subset(dataset, indices[:100])#:-50
     #dataset_test = torch.utils.data.Subset(dataset_test, indices[-25:])#-50:
 
     # define training and validation data loaders
     data_loader = torch.utils.data.DataLoader(
-        dataset, batch_size=2, shuffle=True, num_workers=1,
+        dataset, batch_size=2, shuffle=False, num_workers=1,
         collate_fn=utils.collate_fn)
 
     data_loader_test = torch.utils.data.DataLoader(
@@ -109,7 +110,7 @@ def main():
     model.to(device)
 
     # Model training
-    num_epochs = 5
+    num_epochs = 1
 
 
     for epoch in range(num_epochs):
@@ -141,11 +142,15 @@ def main():
     
     
     # Add the patch to the Axes
-    color = ["red","green"]
+    color = ["Orange","red","green"]
 
     for i in range(sz[0]):
         rect = patches.Rectangle((prediction[0]['boxes'][i,0], prediction[0]['boxes'][i,1]), prediction[0]['boxes'][i,2]-prediction[0]['boxes'][i,0], prediction[0]['boxes'][i,3]-prediction[0]['boxes'][i,1], linewidth=2, edgecolor=color[prediction[0]['labels'][i]], facecolor='none')
         ax.add_patch(rect)
+        if float(prediction[0]['labels'][i]) == 0:
+            ax.annotate('Cola: {0:.2f}%'.format(float(prediction[0]['scores'][i]*100)), (prediction[0]['boxes'][i,0], prediction[0]['boxes'][i,1]-10),color=color[prediction[0]['labels'][i]])
+        else:
+            ax.annotate('Beer: {0:.2f}%'.format(float(prediction[0]['scores'][i]*100)), (prediction[0]['boxes'][i,0], prediction[0]['boxes'][i,1]-10),color=color[prediction[0]['labels'][i]])
     plt.show()
 
     #Image.fromarray(img.mul(255).permute(1, 2, 0).byte().numpy())
@@ -159,5 +164,5 @@ def main():
 if __name__ == "__main__":
     test = main()
     model = test[1]
-    #torch.save(model, 'modelAllpix')
+    torch.save(model, 'modelAllpixtest')
     
