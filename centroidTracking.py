@@ -64,7 +64,7 @@ class centroidTracker():
                 
                 rows = D.min(axis=1).argsort()
                 
-                cols = D.argmin(axis=1).keys()
+                cols = D.argmin(axis=1)[rows]
                 
                 usedRows = set()
                 
@@ -91,7 +91,7 @@ class centroidTracker():
                     
                     for row in unusedRows:
                         objectID = objectIDs[row]
-                        self.disapeared[objectID] += 1
+                        self.disappeared[objectID] += 1
                         
                         if self.disappeared[objectID] > self.maxDisappeared:
                             self.deregister(objectID)
@@ -138,7 +138,7 @@ time.sleep(2.0)
 while True:
     frame = vs.read()
     frame = imutils.resize(frame, width = 400)
-    frame = np.transpose(frame,(2,1,0)) # Convert image to correspond to expected model input
+    frame = np.transpose(frame,(2,0,1)) # Convert image to correspond to expected model input
     
     model.eval()
     frame_np = torch.from_numpy(frame)
@@ -150,17 +150,17 @@ while True:
     
     score_thresh = 0.80
     
-    frame = np.transpose(frame,(2,1,0)) # Convert image back to before model
+    frame = np.transpose(frame,(1,2,0)) # Convert image back to before model
+    
     rects = []
     for i in range(sz[0]):
-        if tempPred[0]['scores'].cpu()[i].item() < 0.8:
-            continue
-        box = tempPred[0]['boxes'][i].cpu()
-        rects.append([int(box[0].item()), int(box[1].item()), int(box[2].item()), int(box[3].item())])
-        if tempPred[0]['labels'].cpu()[i].item() == 1:
-            cv2.rectangle(frame, (int(box[0].item()), int(box[1].item())) , (int(box[2].item()), int(box[3].item())),(0, 255, 0), 2) 
-        else:
-            cv2.rectangle(frame, (int(box[0].item()), int(box[1].item())) , (int(box[2].item()), int(box[3].item())),(255, 0, 0), 2)
+        if tempPred[0]['scores'].cpu()[i].item() > 0.9:
+            box = tempPred[0]['boxes'][i].cpu()
+            rects.append(np.array([box[0].item(), box[1].item(), box[2].item(), box[3].item()]).astype("int"))
+            if tempPred[0]['labels'].cpu()[i].item() == 1:
+                cv2.rectangle(frame, (int(box[0].item()), int(box[1].item())) , (int(box[2].item()), int(box[3].item())),(0, 255, 0), 2) 
+            else:
+                cv2.rectangle(frame, (int(box[0].item()), int(box[1].item())) , (int(box[2].item()), int(box[3].item())),(255, 0, 0), 2)
         
     objects = ct.update(rects)
     
