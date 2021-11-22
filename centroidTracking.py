@@ -132,22 +132,51 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = torch.load(model_path,map_location=device)
 
 print("[INFO] starting video stream...")
-vs = VideoStream(src=0).start()
-
-
+vs = VideoStream(src = 0).start()
+time.sleep(2.0)
 
 while True:
-    time.sleep(0.2)
     frame = vs.read()
-    frame = imutils.resize(frame , width = 320)
+    frame = imutils.resize(frame, width = 400)
+    frame = np.transpose(frame,(2,1,0)) # Convert image to correspond to expected model input
     
-    if W is None or H is None:
-        (H,W) = frame.shape[:2]
+    model.eval()
+    frame_np = torch.from_numpy(frame)
+    frame_np = frame_np/255
+    with torch.no_grad():
+        tempPred = model([frame_np.to(device)])
+    
+    sz = tempPred[0]['boxes'].size()
+    
+    score_thresh = 0.80
+    
+    frame = np.transpose(frame,(2,1,0)) # Convert image back to before model
+    rects = []
+    for i in range(sz[0]):
+        if tempPred[0]['scores'].cpu()[0].item() < 0.8:
+            continue
+        box = tempPred[0]['boxes'][i].cpu()
+        rects.append([int(box[0].item()), int(box[1].item()), int(box[2].item()), int(box[3].item())])
+        if tempPred[0]['labels'].cpu()[i].item() == 1:
+            cv2.rectangle(frame, (int(box[0].item()), int(box[1].item())) , (int(box[2].item()), int(box[3].item())),(0, 255, 0), 2) 
+        else:
+            cv2.rectangle(frame, (int(box[0].item()), int(box[1].item())) , (int(box[2].item()), int(box[3].item())),(255, 0, 0), 2)
         
-    cv2.imshow("frame",frame)
-    key = cv2.waitKey(1) & 0xFF
+    objects = ct.update(rects)
+    
+    #for (objectID, centroid) in objects.items():
         
+        #text = "ID {}".format(objectID)
+        #cv2.
+    
+    cv2.imshow("Frame", frame)
+    key = cv2.waitKey(1) & 0xFF  
+    
+    
+    
     if key == ord("q"):
         break
     
-vs.destroyAllWindows()
+    
+cv2.destroyAllWindows()
+vs.stop()
