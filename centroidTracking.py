@@ -153,7 +153,7 @@ while True:
     frame = np.transpose(frame,(2,1,0)) # Convert image back to before model
     rects = []
     for i in range(sz[0]):
-        if tempPred[0]['scores'].cpu()[0].item() < 0.8:
+        if tempPred[0]['scores'].cpu()[i].item() < 0.8:
             continue
         box = tempPred[0]['boxes'][i].cpu()
         rects.append([int(box[0].item()), int(box[1].item()), int(box[2].item()), int(box[3].item())])
