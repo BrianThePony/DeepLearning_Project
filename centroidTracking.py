@@ -172,11 +172,6 @@ while True:
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0),2)
         cv2.circle(frame, (centroid[0], centroid[1]),4, (0,255,0),2)
                     
-        
-    #for (objectID, centroid) in objects.items():
-        
-        #text = "ID {}".format(objectID)
-        #cv2.
     
     cv2.imshow("Frame", frame)
     key = cv2.waitKey(1) & 0xFF  
