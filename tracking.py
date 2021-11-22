@@ -18,7 +18,7 @@ import imageio
 imlist = []
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 start = datetime.now()
-root = r"C:\Users\NikolajBj\OneDrive - Danmarks Tekniske Universitet\DTU\7. semester\02456 - Deep Learning\DeepLearning_Project\tracking"
+root = r".\tracking"
 for i in list((os.listdir(root))):
     im = Image.open(os.path.join(root,i)).convert('RGB')
     im = np.asarray(im)
@@ -26,7 +26,7 @@ for i in list((os.listdir(root))):
     imlist.append(im)
 #imlist = np.asarray(imlist)
 #imlist = torch.FloatTensor(imlist)
-model_path = r"C:\Users\NikolajBj\OneDrive - Danmarks Tekniske Universitet\DTU\7. semester\02456 - Deep Learning\DeepLearning_Project\modelAllpixtest2"
+model_path = r".\modelAllpixtest2"
 pred = []
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
