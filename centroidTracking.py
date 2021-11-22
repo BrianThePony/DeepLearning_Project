@@ -158,12 +158,21 @@ while True:
             box = tempPred[0]['boxes'][i].cpu()
             rects.append(np.array([box[0].item(), box[1].item(), box[2].item(), box[3].item()]).astype("int"))
             if tempPred[0]['labels'].cpu()[i].item() == 1:
-                cv2.rectangle(frame, (int(box[0].item()), int(box[1].item())) , (int(box[2].item()), int(box[3].item())),(0, 255, 0), 2) 
+                cv2.rectangle(frame, (int(box[0].item()), int(box[1].item())) , (int(box[2].item()), int(box[3].item())),(0, 0, 255), 2) 
             else:
-                cv2.rectangle(frame, (int(box[0].item()), int(box[1].item())) , (int(box[2].item()), int(box[3].item())),(255, 0, 0), 2)
+                cv2.rectangle(frame, (int(box[0].item()), int(box[1].item())) , (int(box[2].item()), int(box[3].item())),(0, 255, 0), 2)
         
     objects = ct.update(rects)
     
+    
+    for (objectID, centroid) in objects.items():
+        
+        text = "ID {}".format(objectID)
+        cv2.putText(frame, text, (centroid[0] - 10, centroid[1] -10),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0),2)
+        cv2.circle(frame, (centroid[0], centroid[1]),4, (0,255,0),2)
+                    
+        
     #for (objectID, centroid) in objects.items():
         
         #text = "ID {}".format(objectID)
