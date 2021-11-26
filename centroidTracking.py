@@ -99,7 +99,7 @@ class centroidTracker():
                 else:
                     for col in unusedCols:
                         self.register(inputCentroids[col])
-            return self.objects
+        return self.objects
 #%%
 from scipy.spatial import distance as dist
 import numpy as np
@@ -132,29 +132,39 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = torch.load(model_path,map_location=device)
 
 print("[INFO] starting video stream...")
-vs = VideoStream(src = 0).start()
+use_test_video = True
+if use_test_video:
+    root = r".\project_20_data\video1.avi"
+    vs = cv2.VideoCapture(root)
+    idx = 0
+else:
+    vs = VideoStream(src = 0).start()
 time.sleep(2.0)
 
 while True:
+    if use_test_video:
+        idx += 5
+        vs.set(cv2.CAP_PROP_POS_FRAMES,1681+idx);
     frame = vs.read()
-    frame = imutils.resize(frame, width = 400)
+    frame = frame[1]
+    frame = imutils.resize(frame, width = 320)
     frame = np.transpose(frame,(2,0,1)) # Convert image to correspond to expected model input
     
     model.eval()
-    frame_np = torch.from_numpy(frame)
+    frame_np = torch.from_numpy(frame[[2,0,1],:,:]) # Change RGB order
     frame_np = frame_np/255
     with torch.no_grad():
         tempPred = model([frame_np.to(device)])
     
     sz = tempPred[0]['boxes'].size()
     
-    score_thresh = 0.80
+    score_thresh = 0.90
     
     frame = np.transpose(frame,(1,2,0)) # Convert image back to before model
     
     rects = []
     for i in range(sz[0]):
-        if tempPred[0]['scores'].cpu()[i].item() > 0.9:
+        if tempPred[0]['scores'].cpu()[i].item() > score_thresh:
             box = tempPred[0]['boxes'][i].cpu()
             rects.append(np.array([box[0].item(), box[1].item(), box[2].item(), box[3].item()]).astype("int"))
             if tempPred[0]['labels'].cpu()[i].item() == 1:
@@ -181,6 +191,8 @@ while True:
     if key == ord("q"):
         break
     
-    
+
+print("Program stopped")
 cv2.destroyAllWindows()
-vs.stop()
+# %%
+
