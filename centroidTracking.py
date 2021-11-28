@@ -132,7 +132,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = torch.load(model_path,map_location=device)
 
 print("[INFO] starting video stream...")
-use_test_video = True
+use_test_video = False
 if use_test_video:
     root = r".\project_20_data\video1.avi"
     vs = cv2.VideoCapture(root)
@@ -144,21 +144,25 @@ time.sleep(2.0)
 while True:
     if use_test_video:
         idx += 5
-        vs.set(cv2.CAP_PROP_POS_FRAMES,1681+idx);
+        vs.set(cv2.CAP_PROP_POS_FRAMES,330+idx);
     frame = vs.read()
-    frame = frame[1]
+    if use_test_video:
+        frame = frame[1]
     frame = imutils.resize(frame, width = 320)
     frame = np.transpose(frame,(2,0,1)) # Convert image to correspond to expected model input
     
     model.eval()
-    frame_np = torch.from_numpy(frame[[2,0,1],:,:]) # Change RGB order
+    if use_test_video:
+        frame_np = torch.from_numpy(frame[[2,0,1],:,:]) # Change RGB order
+    else:
+        frame_np = torch.from_numpy(frame)
     frame_np = frame_np/255
     with torch.no_grad():
         tempPred = model([frame_np.to(device)])
     
     sz = tempPred[0]['boxes'].size()
     
-    score_thresh = 0.90
+    score_thresh = 0.80
     
     frame = np.transpose(frame,(1,2,0)) # Convert image back to before model
     
