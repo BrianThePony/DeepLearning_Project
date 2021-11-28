@@ -144,7 +144,8 @@ time.sleep(2.0)
 while True:
     if use_test_video:
         idx += 5
-        vs.set(cv2.CAP_PROP_POS_FRAMES,330+idx);
+        vs.set(cv2.CAP_PROP_POS_FRAMES,1681+idx);
+    start = datetime.now()
     frame = vs.read()
     if use_test_video:
         frame = frame[1]
@@ -194,7 +195,7 @@ while True:
     
     if key == ord("q"):
         break
-    
+    print("FPS = {0:.1f}".format(1/((datetime.now() - start).total_seconds())))
 
 print("Program stopped")
 cv2.destroyAllWindows()
