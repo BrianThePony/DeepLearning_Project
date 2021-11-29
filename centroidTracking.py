@@ -13,7 +13,7 @@ import numpy as np
 
 
 class centroidTracker():
-    def __init__(self,maxDisappeared=50):
+    def __init__(self,maxDisappeared=10):
         self.nextObjectID = 0
         self.objects = OrderedDict()
         self.disappeared = OrderedDict()
@@ -26,7 +26,7 @@ class centroidTracker():
         self.nextObjectID += 1
         
     def deregister(self, objectID):
-        del self.object[objectID]
+        del self.objects[objectID]
         del self.disappeared[objectID]
         
     def update(self, rects):
@@ -132,7 +132,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = torch.load(model_path,map_location=device)
 
 print("[INFO] starting video stream...")
-use_test_video = False
+use_test_video = True
 if use_test_video:
     root = r".\project_20_data\video1.avi"
     vs = cv2.VideoCapture(root)
@@ -140,10 +140,10 @@ if use_test_video:
 else:
     vs = VideoStream(src = 0).start()
 time.sleep(2.0)
-
+count = 0
 while True:
     if use_test_video:
-        idx += 5
+        idx += 3
         vs.set(cv2.CAP_PROP_POS_FRAMES,1681+idx);
     start = datetime.now()
     frame = vs.read()
@@ -163,7 +163,7 @@ while True:
     
     sz = tempPred[0]['boxes'].size()
     
-    score_thresh = 0.80
+    score_thresh = 0.85
     
     frame = np.transpose(frame,(1,2,0)) # Convert image back to before model
     
@@ -176,7 +176,6 @@ while True:
                 cv2.rectangle(frame, (int(box[0].item()), int(box[1].item())) , (int(box[2].item()), int(box[3].item())),(0, 0, 255), 2) 
             else:
                 cv2.rectangle(frame, (int(box[0].item()), int(box[1].item())) , (int(box[2].item()), int(box[3].item())),(0, 255, 0), 2)
-        
     objects = ct.update(rects)
     
     
@@ -184,7 +183,7 @@ while True:
         
         text = "ID {}".format(objectID)
         cv2.putText(frame, text, (centroid[0] - 10, centroid[1] -10),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0),2)
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0),2)
         cv2.circle(frame, (centroid[0], centroid[1]),4, (0,255,0),2)
                     
     
@@ -195,8 +194,9 @@ while True:
     
     if key == ord("q"):
         break
-    print("FPS = {0:.1f}".format(1/((datetime.now() - start).total_seconds())))
-
+    if count%10 == 0:
+        print("FPS = {0:.1f}".format(1/((datetime.now() - start).total_seconds())))
+    count += 1
 print("Program stopped")
 cv2.destroyAllWindows()
 # %%
