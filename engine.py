@@ -52,8 +52,7 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq):
 
         metric_logger.update(loss=losses_reduced, **loss_dict_reduced)
         metric_logger.update(lr=optimizer.param_groups[0]["lr"])
-
-    return metric_logger
+    return metric_logger, losses_reduced
 
 
 def _get_iou_types(model):
@@ -89,7 +88,15 @@ def evaluate(model, data_loader, device):
             torch.cuda.synchronize()
         model_time = time.time()
         outputs = model(images)
+        
+        loss_dict = model(images, targets)
 
+        losses = loss_dict
+
+        # reduce losses over all GPUs for logging purposes
+
+        loss_value = losses
+        
         outputs = [{k: v.to(cpu_device) for k, v in t.items()} for t in outputs]
         model_time = time.time() - model_time
 
@@ -98,6 +105,7 @@ def evaluate(model, data_loader, device):
         coco_evaluator.update(res)
         evaluator_time = time.time() - evaluator_time
         metric_logger.update(model_time=model_time, evaluator_time=evaluator_time)
+        
 
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()
@@ -108,4 +116,4 @@ def evaluate(model, data_loader, device):
     coco_evaluator.accumulate()
     coco_evaluator.summarize()
     torch.set_num_threads(n_threads)
-    return coco_evaluator
+    return coco_evaluator, metric_logger

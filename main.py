@@ -88,7 +88,7 @@ def main():
 
 
     # Get network
-    model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
+    model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=False)
     model.to(device)
     # move model to the right device
     #train_IMG.to(device)
@@ -112,14 +112,21 @@ def main():
     # Model training
     num_epochs = 10
 
-
+    sumStats = []
+    testStats = []
+    trainLosses = []
+    testCoco = []
     for epoch in range(num_epochs):
         # train for one epoch, printing every 10 iterations
-        train_one_epoch(model,optimizer,data_loader,device,epoch,print_freq=10)
+        temp_stats,temp_train_loss = train_one_epoch(model,optimizer,data_loader,device,epoch,print_freq=10)
+        sumStats.append(temp_stats)
+        trainLosses.append(temp_train_loss)
         # update the learning rate
         lr_scheduler.step()
         # evaluate on the test dataset
-        evaluate(model, data_loader_test, device=device)
+        temp,temp_testStats=evaluate(model, data_loader_test, device=device)
+        testStats.append(temp_testStats)
+        testCoco.append(temp)
         
     # Model Show
     # pick one image from the test set
@@ -159,10 +166,12 @@ def main():
 
     Image.fromarray(img.mul(255).permute(1, 2, 0).byte().numpy())
     sz = prediction[0]['boxes'].size()
-    return prediction, model
+    return prediction, model, sumStats, testCoco
 
 if __name__ == "__main__":
     test = main()
     model = test[1]
-    torch.save(model, 'model')
+    stats = test[2]
+    testcoco = test[3]
+    #torch.save(model, 'model')
     
